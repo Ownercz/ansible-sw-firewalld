@@ -1,0 +1,24 @@
+- name: install firewalld
+  yum:
+    name: firewalld
+    state: latest
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: install firewalld
+  yum:
+    name: firewalld
+    state: latest
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Enable firewalld
+  service: name=firewalld state=started enabled=yes
+
+- name: Set public as default policy
+  command: firewall-cmd --set-default-zone=public
+
+- name: Allow http/https
+  command: firewall-cmd --zone=public --permanent --add-service=ssh
+
+- name: Bounce firewalld
+  service: name=firewalld state=restarted
+  when: "'con01' not in inventory_hostname_short"
